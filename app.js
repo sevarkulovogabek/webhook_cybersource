@@ -25,11 +25,29 @@ function isValidSignature(req) {
 
 // Endpoint для healthCheckUrl
 app.get("/health", (req, res) => {
+  console.log("Request health");
   res.status(200).send("OK");
 });
 
 // Endpoint для webhookUrl
 app.post("/webhook", (req, res) => {
+  console.log("Request webhook (POST)");
+  console.log("Webhook received:");
+  console.log(JSON.stringify(req.body, null, 2));
+
+  // Проверка подписи
+  if (!isValidSignature(req)) {
+    console.error("Invalid Signature");
+    return res.status(401).send("Unauthorized");
+  }
+
+  // Обработка уведомления
+  console.log("Valid Webhook Event");
+  res.status(200).send("Webhook processed successfully");
+});
+
+app.get("/webhook", (req, res) => {
+  console.log("Request webhook (GET)");
   console.log("Webhook received:");
   console.log(JSON.stringify(req.body, null, 2));
 
