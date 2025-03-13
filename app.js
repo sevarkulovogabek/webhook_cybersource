@@ -8,20 +8,6 @@ const PORT = process.env.PORT || 3000;
 // Middleware для обработки JSON запросов
 app.use(bodyParser.json());
 
-// Ваш секретный ключ (замените на ваш ключ)
-const SECRET_KEY = "8ZeiJORgIZK3uI29m16W4JP/WTlV4MCFrchdMcFzrFc=";
-
-// Функция проверки подписи
-function isValidSignature(req) {
-  const signature = req.headers["cybersource-signature"]; // Заголовок подписи CyberSource
-  const payload = JSON.stringify(req.body);
-  const calculatedSignature = crypto
-    .createHmac("sha256", SECRET_KEY)
-    .update(payload)
-    .digest("hex");
-
-  return signature === calculatedSignature;
-}
 
 // Endpoint для healthCheckUrl
 app.get("/health", (req, res) => {
@@ -33,32 +19,18 @@ app.get("/health", (req, res) => {
 app.post("/webhook", (req, res) => {
   console.log("Request webhook (POST)");
   console.log("Webhook received:");
-  console.log(JSON.stringify(req.body, null, 2));
-
-  // Проверка подписи
-  if (!isValidSignature(req)) {
-    console.error("Invalid Signature");
-    return res.status(401).send("Unauthorized");
-  }
-
-  // Обработка уведомления
-  console.log("Valid Webhook Event");
+  console.log(req.body);
   res.status(200).send("Webhook processed successfully");
 });
 
-app.get("/webhook", (req, res) => {
-  console.log("Request webhook (GET)");
-  console.log("Webhook received:");
-  console.log(JSON.stringify(req.body, null, 2));
-
-  // Проверка подписи
-  if (!isValidSignature(req)) {
-    console.error("Invalid Signature");
-    return res.status(401).send("Unauthorized");
-  }
-
-  // Обработка уведомления
-  console.log("Valid Webhook Event");
+app.get("/", (req, res) => {
+  console.log("Request (GET)");
+  console.log(req.body);
+  res.status(200).send("Webhook processed successfully");
+});
+app.post("/", (req, res) => {
+  console.log("Request (GET)");
+  console.log(req.body);
   res.status(200).send("Webhook processed successfully");
 });
 
